@@ -35,9 +35,7 @@ jobs:
           echo "$AWS_EC2_KEY" > ec2_key.pem
           chmod 600 ec2_key.pem
           ssh -o StrictHostKeyChecking=no -i ec2_key.pem $AWS_EC2_USER@$AWS_EC2_HOST << EOF
-            cd my-repo  # Change to the directory where the repository is checked out
             docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
-            docker-compose -f ~/docker-compose.yml pull
-            docker-compose -f ~/docker-compose.yml down
-            docker-compose -f ~/docker-compose.yml up -d
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:latest
+            docker-compose up -d
           EOF
