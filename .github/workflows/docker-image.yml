@@ -35,6 +35,7 @@ jobs:
           echo "$AWS_EC2_KEY" > ec2_key.pem
           chmod 600 ec2_key.pem
           ssh -o StrictHostKeyChecking=no -i ec2_key.pem $AWS_EC2_USER@$AWS_EC2_HOST << EOF
+            echo "test"
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:latest
             docker-compose up -d
           EOF
