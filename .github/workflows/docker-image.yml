@@ -37,6 +37,5 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ec2_key.pem $AWS_EC2_USER@$AWS_EC2_HOST << EOF
             docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:latest
-            cd "$(dirname "$0")"  # Change to the directory containing the script
-            docker-compose up -d
+            docker-compose -f docker-compose.yml up -d
           EOF
