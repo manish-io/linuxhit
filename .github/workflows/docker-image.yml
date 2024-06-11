@@ -16,16 +16,16 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t my-nginx-image .
-      
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-      
+
       - name: Tag Docker image
         run: docker tag my-nginx-image:latest ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:latest
-      
+
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:latest
-      
+
       - name: Deploy to EC2
         env:
           AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
@@ -34,8 +34,10 @@ jobs:
         run: |
           echo "$AWS_EC2_KEY" > ec2_key.pem
           chmod 600 ec2_key.pem
+          scp -o StrictHostKeyChecking=no -i ec2_key.pem docker-compose.yml $AWS_EC2_USER@$AWS_EC2_HOST:/home/$AWS_EC2_USER/docker-compose.yml
           ssh -o StrictHostKeyChecking=no -i ec2_key.pem $AWS_EC2_USER@$AWS_EC2_HOST << EOF
             docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
             docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:latest
+            cd /home/$AWS_EC2_USER
             docker-compose up -d
           EOF
