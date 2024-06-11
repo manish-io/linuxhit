@@ -17,10 +17,10 @@ jobs:
       run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image:$(date +%s)
+      run: docker build . --file Dockerfile --tag my-image:${{ github.sha }}
 
-    - name: Push the Docker image
+    - name: Tag and push the Docker image
       run: |
-        IMAGE_NAME=my-image:$(date +%s)
+        IMAGE_NAME=my-image:${{ github.sha }}
         docker tag $IMAGE_NAME manishchauhan27/$IMAGE_NAME
         docker push manishchauhan27/$IMAGE_NAME
