@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      
+
       - name: Build Docker image
         run: |
           docker build -t my-nginx-image .
@@ -35,12 +35,10 @@ jobs:
         run: |
           echo "$AWS_EC2_KEY" > ec2_key.pem
           chmod 600 ec2_key.pem
-          scp -o StrictHostKeyChecking=no -i ec2_key.pem docker-compose.yml $AWS_EC2_USER@$AWS_EC2_HOST:/home/$AWS_EC2_USER/docker-compose.yml
+          scp -o StrictHostKeyChecking=no -i ec2_key.pem docker-compose.yml $AWS_EC2_USER@$AWS_EC2_HOST:~/docker-compose.yml
           ssh -o StrictHostKeyChecking=no -i ec2_key.pem $AWS_EC2_USER@$AWS_EC2_HOST << EOF
-            export DOCKER_HUB_USERNAME="${{ secrets.DOCKER_HUB_USERNAME }}"
-            export DOCKER_HUB_PASSWORD="${{ secrets.DOCKER_HUB_PASSWORD }}"
-            docker login -u "$DOCKER_HUB_USERNAME" -p "$DOCKER_HUB_PASSWORD"
-            docker pull $DOCKER_HUB_USERNAME/my-nginx-image:latest
-            cd /home/$AWS_EC2_USER
-            docker-compose up -d
+            sudo docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" -p "${{ secrets.DOCKER_HUB_PASSWORD }}"
+            sudo docker-compose -f ~/docker-compose.yml pull
+            sudo docker-compose -f ~/docker-compose.yml down
+            sudo docker-compose -f ~/docker-compose.yml up -d
           EOF
