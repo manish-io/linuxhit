@@ -1,0 +1,17 @@
+name: Build for Stage
+
+on:
+  push:
+    branches:
+      - stage
+  pull_request:
+    types: [closed]
+    branches:
+      - stage
+
+jobs:
+  call-build:
+    uses: ./.github/workflows/build.yml
+    with:
+      branch: stage
+      image_tag: ${{ github.sha }}
