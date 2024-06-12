@@ -24,8 +24,10 @@ jobs:
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
       - name: Tag Docker image
-        run: docker tag my-nginx-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:${{ env.SHA_TAG }}
+        run: |
+          docker tag my-nginx-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:${{ env.SHA_TAG }}
 
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:${{ env.SHA_TAG }}
