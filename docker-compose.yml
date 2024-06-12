@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   web:
-    image: ${DOCKER_HUB_USERNAME}/my-nginx-image:${SHA_TAG}
+    image: "manishchauhan27/my-image:${SHA_TAG}"
     ports:
       - "80:80"
-      
