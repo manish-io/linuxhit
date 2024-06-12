@@ -20,7 +20,7 @@ jobs:
           echo "::set-env name=DOCKER_PASSWORD::${{ secrets.DOCKER_HUB_PASSWORD }}"
 
       - name: Call Build Workflow for Production
-        uses: ./.github/workflows/docker-image.yml
+        uses: ./.github/workflows/build-docker-image.yml
         with:
           branch: production
           image_tag: ${{ github.sha }}
