@@ -11,7 +11,21 @@ on:
 
 jobs:
   call-build:
-    uses: ./.github/workflows/docker-image.yml
-    with:
-      branch: production
-      image_tag: ${{ github.sha }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker credentials
+        id: docker_creds
+        run: |
+          echo "DOCKER_USERNAME=$(cat docker_username.env)" >> $GITHUB_ENV
+          echo "DOCKER_PASSWORD=$(cat docker_password.env)" >> $GITHUB_ENV
+
+      - name: Call Build Workflow for Production
+        uses: ./.github/workflows/build-docker-image.yml
+        with:
+          branch: production
+          image_tag: ${{ github.sha }}
+          docker_username: ${{ env.DOCKER_USERNAME }}
+          docker_password: ${{ env.DOCKER_PASSWORD }}
