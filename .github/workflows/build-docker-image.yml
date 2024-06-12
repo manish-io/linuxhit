@@ -28,13 +28,9 @@ jobs:
       - name: Tag Docker image for Stage
         run: |
           docker tag my-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/stage:${{ env.SHA_TAG }}
-
-      - name: Push Docker image to Stage repository
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/stage:${{ env.SHA_TAG }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/stage:${{ env.SHA_TAG }}
 
       - name: Tag Docker image for Production
         run: |
           docker tag my-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/production:${{ env.SHA_TAG }}
-
-      - name: Push Docker image to Production repository
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/production:${{ env.SHA_TAG }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/production:${{ env.SHA_TAG }}
