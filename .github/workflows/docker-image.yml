@@ -20,14 +20,21 @@ jobs:
 
       - name: Set up Docker SHA Tag
         id: vars
-        run: echo "SHA_TAG=${{ inputs.image_tag }}" >> $GITHUB_ENV
+        run: echo "SHA_TAG=${{ inputs.image_tag }}-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
-      - name: Tag Docker image
+      - name: Tag Docker image for Stage
         run: |
-          docker tag my-nginx-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:${{ env.SHA_TAG }}
+          docker tag my-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/stage:${{ env.SHA_TAG }}
 
-      - name: Push Docker image to Docker Hub
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:${{ env.SHA_TAG }}
+      - name: Push Docker image to Stage repository
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/stage:${{ env.SHA_TAG }}
+
+      - name: Tag Docker image for Production
+        run: |
+          docker tag my-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/production:${{ env.SHA_TAG }}
+
+      - name: Push Docker image to Production repository
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/production:${{ env.SHA_TAG }}
