@@ -13,8 +13,16 @@ jobs:
   call-build:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Docker credentials
+        id: docker_creds
+        run: |
+          echo "::set-env name=DOCKER_USERNAME::${{ secrets.DOCKER_HUB_USERNAME }}"
+          echo "::set-env name=DOCKER_PASSWORD::${{ secrets.DOCKER_HUB_PASSWORD }}"
+
       - name: Call Build Workflow for Stage
         uses: ./.github/workflows/build-docker-image.yml
         with:
           branch: stage
           image_tag: ${{ github.sha }}
+          docker_username: ${{ steps.docker_creds.outputs.DOCKER_USERNAME }}
+          docker_password: ${{ steps.docker_creds.outputs.DOCKER_PASSWORD }}
