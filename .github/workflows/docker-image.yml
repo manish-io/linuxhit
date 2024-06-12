@@ -39,7 +39,12 @@ jobs:
         env:
           AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
           AWS_EC2_USER: ${{ secrets.AWS_EC2_USER }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          SHA_TAG: ${{ env.SHA_TAG }}
         run: |
+          # Replace placeholders in docker-compose.yml before copying
+          sed -i "s#\${DOCKER_HUB_USERNAME}#${DOCKER_HUB_USERNAME}#" docker-compose.yml
+          sed -i "s#\${SHA_TAG}#${SHA_TAG}#" docker-compose.yml
           scp -o StrictHostKeyChecking=no -i ec2_key.pem index.html $AWS_EC2_USER@$AWS_EC2_HOST:/home/$AWS_EC2_USER/index.html
           scp -o StrictHostKeyChecking=no -i ec2_key.pem docker-compose.yml $AWS_EC2_USER@$AWS_EC2_HOST:/home/$AWS_EC2_USER/docker-compose.yml
 
@@ -47,7 +52,6 @@ jobs:
         env:
           AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
           AWS_EC2_USER: ${{ secrets.AWS_EC2_USER }}
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           SHA_TAG: ${{ env.SHA_TAG }}
         run: |
           ssh -o StrictHostKeyChecking=no -i ec2_key.pem $AWS_EC2_USER@$AWS_EC2_HOST << EOF
