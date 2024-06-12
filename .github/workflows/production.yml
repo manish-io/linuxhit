@@ -1,0 +1,17 @@
+name: Build for Production
+
+on:
+  push:
+    branches:
+      - production
+  pull_request:
+    types: [closed]
+    branches:
+      - production
+
+jobs:
+  call-build:
+    uses: ./.github/workflows/build.yml
+    with:
+      branch: production
+      image_tag: ${{ github.sha }}
