@@ -1,13 +1,13 @@
-name: Build for Production
+name: Build for Stage
 
 on:
   push:
     branches:
-      - production
+      - stage
   pull_request:
     types: [closed]
     branches:
-      - production
+      - stage
 
 jobs:
   call-build:
@@ -16,13 +16,13 @@ jobs:
       - name: Set up Docker credentials
         id: docker_creds
         run: |
-          echo "::set-env name=DOCKER_USERNAME::${{ secrets.DOCKER_HUB_USERNAME }}"
-          echo "::set-env name=DOCKER_PASSWORD::${{ secrets.DOCKER_HUB_PASSWORD }}"
+          echo "DOCKER_USERNAME=$(cat docker_username.env)" >> $GITHUB_ENV
+          echo "DOCKER_PASSWORD=$(cat docker_password.env)" >> $GITHUB_ENV
 
-      - name: Call Build Workflow for Production
+      - name: Call Build Workflow for Stage
         uses: ./.github/workflows/docker-image.yml
         with:
-          branch: production
+          branch: stage
           image_tag: ${{ github.sha }}
-          docker_username: ${{ steps.docker_creds.outputs.DOCKER_USERNAME }}
-          docker_password: ${{ steps.docker_creds.outputs.DOCKER_PASSWORD }}
+          docker_username: ${{ env.DOCKER_USERNAME }}
+          docker_password: ${{ env.DOCKER_PASSWORD }}
