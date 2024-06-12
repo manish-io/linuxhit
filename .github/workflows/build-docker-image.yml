@@ -23,7 +23,7 @@ jobs:
         run: echo "SHA_TAG=${{ inputs.image_tag }}-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
-        run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
+        run: echo "${{ inputs.docker_password }}" | docker login -u "${{ inputs.docker_username }}" --password-stdin
 
       - name: Tag Docker image for Stage
         run: |
