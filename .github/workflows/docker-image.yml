@@ -1,65 +1,36 @@
-name: Deploy to EC2 with Docker Compose
+name: Build Docker Image
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [closed]
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+      image_tag:
+        required: true
+        type: string
 
 jobs:
-  deploy:
-    if: github.event_name == 'push' || github.event.pull_request.merged == true
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      
+
       - name: Set up Docker SHA Tag
         id: vars
-        run: echo "SHA_TAG=${GITHUB_SHA::5}" >> $GITHUB_ENV
+        run: echo "SHA_TAG=${{ inputs.image_tag }}" >> $GITHUB_ENV
 
       - name: Build Docker image
         run: |
           docker build -t my-nginx-image:${{ env.SHA_TAG }} .
-      
+
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
-      
+
       - name: Tag Docker image
         run: docker tag my-nginx-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:${{ env.SHA_TAG }}
-      
+
       - name: Push Docker image to Docker Hub
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/my-nginx-image:${{ env.SHA_TAG }}
-      
-      - name: Prepare SSH key
-        run: |
-          echo "${{ secrets.AWS_EC2_KEY }}" > ec2_key.pem
-          chmod 600 ec2_key.pem
-
-      - name: Copy index.html and docker-compose.yml to EC2
-        env:
-          AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
-          AWS_EC2_USER: ${{ secrets.AWS_EC2_USER }}
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          SHA_TAG: ${{ env.SHA_TAG }}
-        run: |
-          # Replace placeholders in docker-compose.yml before copying
-          sed -i "s#\${DOCKER_HUB_USERNAME}#${DOCKER_HUB_USERNAME}#" docker-compose.yml
-          sed -i "s#\${SHA_TAG}#${SHA_TAG}#" docker-compose.yml
-          scp -o StrictHostKeyChecking=no -i ec2_key.pem index.html $AWS_EC2_USER@$AWS_EC2_HOST:/home/$AWS_EC2_USER/index.html
-          scp -o StrictHostKeyChecking=no -i ec2_key.pem docker-compose.yml $AWS_EC2_USER@$AWS_EC2_HOST:/home/$AWS_EC2_USER/docker-compose.yml
-
-      - name: Deploy to EC2
-        env:
-          AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
-          AWS_EC2_USER: ${{ secrets.AWS_EC2_USER }}
-          SHA_TAG: ${{ env.SHA_TAG }}
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ec2_key.pem $AWS_EC2_USER@$AWS_EC2_HOST << EOF
-            docker-compose down
-            docker-compose up -d --build
-          EOF
