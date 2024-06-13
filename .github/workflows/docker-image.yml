@@ -28,6 +28,9 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ inputs.docker_password }}" | docker login -u "${{ inputs.docker_username }}" --password-stdin
 
+      - name: Build Docker image
+        run: docker build -t my-image:${{ env.SHA_TAG }} .
+
       - name: Tag and Push Docker image
         run: |
           DOCKER_REPO=${{ inputs.docker_username }}/${{ inputs.branch }}
