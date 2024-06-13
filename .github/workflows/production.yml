@@ -4,17 +4,16 @@ on:
   push:
     branches:
       - production
-  pull_request:
-    types: [closed]
-    branches:
-      - production
 
 jobs:
-  call-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Call Build Workflow for Production
-        uses: ./.github/workflows/build-docker-image.yml
-        with:
-          docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+  build-for-production:
+    uses: ./.github/workflows/build-docker-image.yml
+    with:
+      repo_base_name: manishchauhan27
+      branch_name: production
+      repo_name: production
+    secrets:
+      docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      docker_hub_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+

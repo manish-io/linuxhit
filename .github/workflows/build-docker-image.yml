@@ -3,15 +3,25 @@ name: Build Docker Image
 on:
   workflow_call:
     inputs:
-      docker_username:
+
+      repo_base_name:
         required: true
         type: string
-      docker_password:
+      branch_name:
         required: true
         type: string
+      repo_name:
+        required: true
+        type: string
+    secrets:
+      docker_hub_username:
+        required: true
+      docker_hub_password:
+        required: true
 
 jobs:
-  build:
+  build-and-push:
+
     runs-on: ubuntu-latest
 
     steps:
@@ -23,17 +33,17 @@ jobs:
         run: echo "SHA_TAG=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
-        run: echo "${{ inputs.docker_password }}" | docker login -u "${{ inputs.docker_username }}" --password-stdin
+
+        run: echo "${{ secrets.docker_hub_password }}" | docker login -u "${{ secrets.docker_hub_username }}" --password-stdin
+
 
       - name: Build Docker image
         run: docker build -t my-image:${{ env.SHA_TAG }} .
 
-      - name: Determine branch name
-        id: branch_name
-        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
 
       - name: Tag and Push Docker image
         run: |
-          DOCKER_REPO=${{ inputs.docker_username }}/${{ steps.branch_name.outputs.BRANCH_NAME }}
+          DOCKER_REPO=${{ inputs.repo_base_name }}/${{ inputs.repo_name }}
+
           docker tag my-image:${{ env.SHA_TAG }} $DOCKER_REPO:${{ env.SHA_TAG }}
           docker push $DOCKER_REPO:${{ env.SHA_TAG }}
