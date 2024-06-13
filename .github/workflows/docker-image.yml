@@ -1,19 +1,14 @@
 name: Build Docker Image
 
 on:
-  workflow_call:
-    inputs:
-      docker_username:
-        required: true
-        type: string
-      docker_password:
-        required: true
-        type: string
+  push:
+    branches:
+      - stage
+      - production
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -23,7 +18,7 @@ jobs:
         run: echo "SHA_TAG=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
-        run: echo "${{ inputs.docker_password }}" | docker login -u "${{ inputs.docker_username }}" --password-stdin
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
       - name: Build Docker image
         run: docker build -t my-image:${{ env.SHA_TAG }} .
@@ -34,6 +29,6 @@ jobs:
 
       - name: Tag and Push Docker image
         run: |
-          DOCKER_REPO=${{ inputs.docker_username }}/${{ steps.branch_name.outputs.BRANCH_NAME }}
+          DOCKER_REPO=${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.branch_name.outputs.BRANCH_NAME }}
           docker tag my-image:${{ env.SHA_TAG }} $DOCKER_REPO:${{ env.SHA_TAG }}
           docker push $DOCKER_REPO:${{ env.SHA_TAG }}
