@@ -17,8 +17,15 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Call Build Workflow for Production
-        uses: ./.github/workflows/build-docker-image.yml
+        uses: actions/github-script@v3
         with:
-          branch: production
-          docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          script: |
+            github.actions.workflowDispatch({
+              workflow_id: '.github/workflows/build-docker-image.yml',
+              ref: 'production',
+              inputs: {
+                branch: 'production',
+                docker_username: process.env.DOCKER_HUB_USERNAME,
+                docker_password: process.env.DOCKER_HUB_PASSWORD,
+              }
+            })
