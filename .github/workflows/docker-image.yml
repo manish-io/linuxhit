@@ -29,6 +29,9 @@ jobs:
 
       - name: Tag and Push Docker image
         run: |
-          DOCKER_REPO=${{ secrets.DOCKER_HUB_USERNAME }}/${{ steps.branch_name.outputs.BRANCH_NAME }}
+          DOCKER_REPO=${{ secrets.DOCKER_HUB_USERNAME }}/production
+          if [[ "${{ env.BRANCH_NAME }}" == "stage" ]]; then
+            DOCKER_REPO=${{ secrets.DOCKER_HUB_USERNAME }}/stage
+          fi
           docker tag my-image:${{ env.SHA_TAG }} $DOCKER_REPO:${{ env.SHA_TAG }}
           docker push $DOCKER_REPO:${{ env.SHA_TAG }}
