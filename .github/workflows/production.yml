@@ -6,6 +6,7 @@ on:
       - production
 
 jobs:
+
   build-for-production:
     uses: ./.github/workflows/build-docker-image.yml
     with:
@@ -15,3 +16,4 @@ jobs:
     secrets:
       docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
       docker_hub_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
