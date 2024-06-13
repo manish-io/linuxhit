@@ -12,3 +12,6 @@ jobs:
       repo_base_name: manishchauhan27
       branch_name: production
       repo_name: production
+    secrets:
+      docker_hub_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      docker_hub_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
