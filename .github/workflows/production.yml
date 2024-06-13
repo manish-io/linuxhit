@@ -13,9 +13,13 @@ jobs:
   call-build:
     runs-on: ubuntu-latest
     steps:
-      - name: List files in current directory
-        run: ls -l
-        
+      - name: Print current directory
+        run: |
+          pwd
+          ls -l
+          echo "Contents of .github/workflows:"
+          ls -l .github/workflows
+
       - name: Call Build Workflow for Production
         uses: ./.github/workflows/build-docker-image.yml
         with:
