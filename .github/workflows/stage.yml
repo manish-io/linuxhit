@@ -4,17 +4,10 @@ on:
   push:
     branches:
       - stage
-  pull_request:
-    types: [closed]
-    branches:
-      - stage
 
 jobs:
-  call-build:
+  build-for-stage:
     runs-on: ubuntu-latest
     steps:
-      - name: Call Build Workflow for Stage
+      - name: Call Build Docker Image Workflow
         uses: ./.github/workflows/build-docker-image.yml
-        with:
-          docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
