@@ -1,7 +1,17 @@
 name: Build Docker Image
 
 on:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      repo_base_name:
+        required: true
+        type: string
+      branch_name:
+        required: true
+        type: string
+      repo_name:
+        required: true
+        type: string
 
 jobs:
   build-and-push:
@@ -23,6 +33,6 @@ jobs:
 
       - name: Tag and Push Docker image
         run: |
-          DOCKER_REPO=${{ env.REPO_BASE_NAME }}/${{ env.REPO_NAME }}
+          DOCKER_REPO=${{ inputs.repo_base_name }}/${{ inputs.repo_name }}
           docker tag my-image:${{ env.SHA_TAG }} $DOCKER_REPO:${{ env.SHA_TAG }}
           docker push $DOCKER_REPO:${{ env.SHA_TAG }}
