@@ -12,6 +12,11 @@ on:
       repo_name:
         required: true
         type: string
+    secrets:
+      docker_hub_username:
+        required: true
+      docker_hub_password:
+        required: true
 
 jobs:
   build-and-push:
@@ -26,7 +31,7 @@ jobs:
         run: echo "SHA_TAG=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+        run: echo "${{ secrets.docker_hub_password }}" | docker login -u "${{ secrets.docker_hub_username }}" --password-stdin
 
       - name: Build Docker image
         run: docker build -t my-image:${{ env.SHA_TAG }} .
