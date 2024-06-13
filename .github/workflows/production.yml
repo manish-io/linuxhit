@@ -11,21 +11,8 @@ on:
 
 jobs:
   call-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Call Build Workflow for Production
-        uses: actions/github-script@v3
-        with:
-          script: |
-            github.actions.workflowDispatch({
-              workflow_id: '.github/workflows/build-docker-image.yml',
-              ref: 'production',
-              inputs: {
-                branch: 'production',
-                docker_username: process.env.DOCKER_HUB_USERNAME,
-                docker_password: process.env.DOCKER_HUB_PASSWORD,
-              }
-            })
+    uses: ./.github/workflows/build-docker-image.yml
+    with:
+      branch: production
+      docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+      docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
