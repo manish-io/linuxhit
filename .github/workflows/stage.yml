@@ -7,18 +7,8 @@ on:
 
 jobs:
   build-for-stage:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set environment variables for stage
-        run: |
-          echo "REPO_BASE_NAME=manishchauhan27" >> $GITHUB_ENV
-          echo "BRANCH_NAME=stage" >> $GITHUB_ENV
-          echo "REPO_NAME=stage" >> $GITHUB_ENV
-
-      - name: Call Build Docker Image Workflow
-        run: |
-          ./.github/workflows/build-docker-image.yml
+    uses: ./.github/workflows/build-docker-image.yml
+    with:
+      repo_base_name: manishchauhan27
+      branch_name: stage
+      repo_name: stage
