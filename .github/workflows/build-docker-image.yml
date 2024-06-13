@@ -3,9 +3,6 @@ name: Build Docker Image
 on:
   workflow_call:
     inputs:
-      branch:
-        required: true
-        type: string
       docker_username:
         required: true
         type: string
@@ -28,8 +25,15 @@ jobs:
       - name: Log in to Docker Hub
         run: echo "${{ inputs.docker_password }}" | docker login -u "${{ inputs.docker_username }}" --password-stdin
 
+      - name: Build Docker image
+        run: docker build -t my-image:${{ env.SHA_TAG }} .
+
+      - name: Determine branch name
+        id: branch_name
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_ENV
+
       - name: Tag and Push Docker image
         run: |
-          DOCKER_REPO=${{ inputs.docker_username }}/${{ inputs.branch }}
+          DOCKER_REPO=${{ inputs.docker_username }}/${{ steps.branch_name.outputs.BRANCH_NAME }}
           docker tag my-image:${{ env.SHA_TAG }} $DOCKER_REPO:${{ env.SHA_TAG }}
           docker push $DOCKER_REPO:${{ env.SHA_TAG }}
