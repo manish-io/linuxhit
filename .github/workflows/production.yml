@@ -11,8 +11,14 @@ on:
 
 jobs:
   call-build:
-    uses: ./.github/workflows/build-docker-image.yml
-    with:
-      branch: production
-      docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-      docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Call Build Workflow for Production
+        uses: ./.github/workflows/build-docker-image.yml
+        with:
+          branch: production
+          docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
