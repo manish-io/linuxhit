@@ -10,9 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
+      - name: Set environment variables for production
+        run: |
+          echo "REPO_BASE_NAME=manishchauhan27" >> $GITHUB_ENV
+          echo "BRANCH_NAME=production" >> $GITHUB_ENV
+          echo "REPO_NAME=production" >> $GITHUB_ENV
+
       - name: Call Build Docker Image Workflow
-        uses: ./.github/workflows/build-docker-image.yml
-        with:
-          repo_base_name: manishchauhan27
-          branch_name: production
-          repo_name: production
+        run: |
+          ./.github/workflows/build-docker-image.yml
