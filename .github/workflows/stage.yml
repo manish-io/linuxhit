@@ -13,13 +13,8 @@ jobs:
   call-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - name: Call Build Workflow for Stage
         uses: ./.github/workflows/build-docker-image.yml
         with:
-          branch: stage
           docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-
