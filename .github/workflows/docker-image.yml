@@ -6,7 +6,10 @@ on:
       branch:
         required: true
         type: string
-      image_tag:
+      docker_username:
+        required: true
+        type: string
+      docker_password:
         required: true
         type: string
 
@@ -20,21 +23,13 @@ jobs:
 
       - name: Set up Docker SHA Tag
         id: vars
-        run: echo "SHA_TAG=${{ inputs.image_tag }}-${GITHUB_SHA:0:7}" >> $GITHUB_ENV
+        run: echo "SHA_TAG=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Log in to Docker Hub
-        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+        run: echo "${{ inputs.docker_password }}" | docker login -u "${{ inputs.docker_username }}" --password-stdin
 
-      - name: Tag Docker image for Stage
+      - name: Tag and Push Docker image
         run: |
-          docker tag my-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/stage:${{ env.SHA_TAG }}
-
-      - name: Push Docker image to Stage repository
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/stage:${{ env.SHA_TAG }}
-
-      - name: Tag Docker image for Production
-        run: |
-          docker tag my-image:${{ env.SHA_TAG }} ${{ secrets.DOCKER_HUB_USERNAME }}/production:${{ env.SHA_TAG }}
-
-      - name: Push Docker image to Production repository
-        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/production:${{ env.SHA_TAG }}
+          DOCKER_REPO=${{ inputs.docker_username }}/${{ inputs.branch }}
+          docker tag my-image:${{ env.SHA_TAG }} $DOCKER_REPO:${{ env.SHA_TAG }}
+          docker push $DOCKER_REPO:${{ env.SHA_TAG }}
