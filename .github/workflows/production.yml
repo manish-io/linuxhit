@@ -8,6 +8,11 @@ on:
 jobs:
   build-for-production:
     runs-on: ubuntu-latest
+
     steps:
       - name: Call Build Docker Image Workflow
         uses: ./.github/workflows/build-docker-image.yml
+        with:
+          repo_base_name: manishchauhan27
+          branch_name: production
+          repo_name: production
