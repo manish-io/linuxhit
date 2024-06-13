@@ -22,3 +22,4 @@ jobs:
           branch: stage
           docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
