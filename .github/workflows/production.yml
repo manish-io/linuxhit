@@ -4,24 +4,10 @@ on:
   push:
     branches:
       - production
-  pull_request:
-    types: [closed]
-    branches:
-      - production
 
 jobs:
-  call-build:
+  build-for-production:
     runs-on: ubuntu-latest
     steps:
-      - name: Print current directory
-        run: |
-          pwd
-          ls -l
-          echo "Contents of .github/workflows:"
-          ls -l .github/workflows
-
-      - name: Call Build Workflow for Production
-        uses: ./.github/workflows/
-        with:
-          docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Call Build Docker Image Workflow
+        uses: ./.github/workflows/build-docker-image.yml
