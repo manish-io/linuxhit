@@ -21,7 +21,7 @@ jobs:
           ls -l .github/workflows
 
       - name: Call Build Workflow for Production
-        uses: ./.github/workflows/build-docker-image.yml
+        uses: ./.github/workflows/
         with:
           docker_username: ${{ secrets.DOCKER_HUB_USERNAME }}
           docker_password: ${{ secrets.DOCKER_HUB_PASSWORD }}
